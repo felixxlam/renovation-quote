@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8" />
+  <title>裝修報價小幫手</title>
+  <style>
+    body { font-family: "Comic Sans MS", cursive; background: #f0f8ff; padding: 20px; }
+    h1 { color: #ff6b6b; text-align: center; }
+    select, input, button { font-size: 18px; padding: 10px; margin: 10px; border-radius: 10px; }
+    button { background: #4ecdc4; color: white; border: none; cursor: pointer; }
+    button:hover { background: #45b7a8; }
+    #結果 { font-size: 24px; color: #2ecc71; margin: 20px; text-align: center; }
+    .item { margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <h1>裝修報價小幫手</h1>
+  <p style="text-align:center;">選項目 → 輸入數量 → 按計算！</p>
+
+  <div class="item">
+    <select id="項目"></select>
+    <input type="number" id="數量" value="1" min="1" />
+    <button onclick="加項目()">加進報價單</button>
+  </div>
+
+  <div id="報價單"></div>
+  <div id="總價" style="font-weight:bold; font-size:28px; color:#e74c3c; text-align:center; margin:30px;">
+    總價：$0
+  </div>
+
+  <script src="data.js"></script>
+  <script>
+    let 報價項目 = [];
+
+    // 載入選單
+    const select = document.getElementById("項目");
+    價錢清單.forEach(p => {
+      const opt = document.createElement("option");
+      opt.value = p.代號;
+      opt.textContent = `${p.代號} - ${p.工程 || p.動作} (${p.單位}) - $${p.價錢}`;
+      select.appendChild(opt);
+    });
+
+    function 加項目() {
+      const 代號 = document.getElementById("項目").value;
+      const 數量 = parseInt(document.getElementById("數量").value);
+      const 項目 = 價錢清單.find(x => x.代號 === 代號);
+      if (!項目 || 數量 < 1) return;
+
+      報價項目.push({ ...項目, 數量 });
+      顯示報價單();
+    }
+
+    function 顯示報價單() {
+      const div = document.getElementById("報價單");
+      div.innerHTML = "<h2>報價單：</h2>";
+      let 總和 = 0;
+
+      報價項目.forEach((p, i) => {
+        const 小計 = p.價錢 * p.數量;
+        總和 += 小計;
+        div.innerHTML += `
+          <div style="background:#fff; margin:5px; padding:10px; border-radius:10px;">
+            ${p.代號} - ${p.工程 || p.動作} 
+            × ${p.數量}${p.單位} = $${小計}
+            <button onclick="刪除項目(${i})" style="float:right; background:red;">X</button>
+          </div>`;
+      });
+
+      document.getElementById("總價").innerHTML = `總價：$${總和}`;
+    }
+
+    function 刪除項目(i) {
+      報價項目.splice(i, 1);
+      顯示報價單();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8" />
+  <title>後台管理</title>
+  <style>
+    body { font-family: Arial; background: #fff3cd; padding: 20px; }
+    input, button { margin: 5px; padding: 8px; }
+    button { background: #3498db; color: white; border: none; }
+    .item { background: white; padding: 10px; margin: 5px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>後台管理（老闆專用）</h1>
+  <input id="代號" placeholder="代號 (如 1z)" />
+  <input id="分類" placeholder="分類" />
+  <input id="動作" placeholder="動作" />
+  <input id="工程" placeholder="工程名稱" />
+  <input id="單位" placeholder="單位" />
+  <input id="價錢" type="number" placeholder="價錢" />
+  <button onclick="加新項目()">加新項目</button>
+
+  <div id="列表"></div>
+  <button onclick="儲存()" style="background:green; padding:15px; font-size:18px;">儲存所有變更</button>
+
+  <script src="data.js"></script>
+  <script>
+    function 顯示列表() {
+      const div = document.getElementById("列表");
+      div.innerHTML = "<h2>所有項目：</h2>";
+      價錢清單.forEach((p, i) => {
+        div.innerHTML += `
+          <div class="item">
+            ${p.代號} | ${p.分類} | ${p.動作} | ${p.工程} | ${p.單位} | $${p.價錢}
+            <button onclick="刪除(${i})" style="float:right; background:red;">刪除</button>
+            <button onclick="編輯(${i})" style="float:right; margin-right:5px;">編輯</button>
+          </div>`;
+      });
+    }
+
+    function 加新項目() {
+      const 新項目 = {
+        代號: document.getElementById("代號").value,
+        分類: document.getElementById("分類").value,
+        動作: document.getElementById("動作").value,
+        工程: document.getElementById("工程").value,
+        單位: document.getElementById("單位").value,
+        價錢: parseInt(document.getElementById("價錢").value)
+      };
+      if (新項目.代號 && 新項目.價錢) {
+        價錢清單.push(新項目);
+        顯示列表();
+        清除輸入();
+      }
+    }
+
+    function 刪除(i) {
+      if (confirm("確定刪除？")) {
+        價錢清單.splice(i, 1);
+        顯示列表();
+      }
+    }
+
+    function 編輯(i) {
+      const p = 價錢清單[i];
+      document.getElementById("代號").value = p.代號;
+      document.getElementById("分類").value = p.分類;
+      document.getElementById("動作").value = p.動作;
+      document.getElementById("工程").value = p.工程;
+      document.getElementById("單位").value = p.單位;
+      document.getElementById("價錢").value = p.價錢;
+      刪除(i);
+    }
+
+    function 清除輸入() {
+      document.querySelectorAll("input").forEach(inp => inp.value = "");
+    }
+
+    function 儲存() {
+      localStorage.setItem("價錢清單", JSON.stringify(價錢清單));
+      alert("已儲存！重新打開 index.html 就會更新！");
+    }
+
+    // 載入儲存的資料
+    const saved = localStorage.getItem("價錢清單");
+    if (saved) 價錢清單 = JSON.parse(saved);
+
+    顯示列表();
+  </script>
+</body>
+</html>
